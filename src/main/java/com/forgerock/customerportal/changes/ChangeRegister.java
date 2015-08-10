@@ -18,7 +18,9 @@ import org.glassfish.tyrus.server.Server;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Date: 07/08/2015
@@ -28,6 +30,7 @@ public class ChangeRegister {
 
     private static final String SETTING_PRIMARY_SHARD_ONLY = "changes.primaryShardOnly";
     private static final String SETTING_PORT = "changes.port";
+    private static final String SETTING_LISTEN_SOURCE = "changes.listenSource";
 
     private final ESLogger log = Loggers.getLogger(ChangeRegister.class);
 
@@ -37,6 +40,11 @@ public class ChangeRegister {
     public ChangeRegister(final Settings settings, IndicesService indicesService) {
         final boolean allShards = !settings.getAsBoolean(SETTING_PRIMARY_SHARD_ONLY, Boolean.FALSE);
         final int port = settings.getAsInt(SETTING_PORT, 9400);
+        final String[] sourcesStr = settings.getAsArray(SETTING_LISTEN_SOURCE, new String[]{"*"});
+        final Set<Source> sources = new HashSet<>();
+        for(String sourceStr : sourcesStr) {
+            sources.add(new Source(sourceStr));
+        }
 
         Server server = new Server("localhost", port, "/ws", null, WebSocket.class);
 
@@ -52,6 +60,7 @@ public class ChangeRegister {
         indicesService.indicesLifecycle().addListener(new IndicesLifecycle.Listener() {
             @Override
             public void afterIndexShardStarted(IndexShard indexShard) {
+                final String indexName = indexShard.routingEntry().getIndex();
                 if (allShards || indexShard.routingEntry().primary()) {
 
                     indexShard.indexingService().addListener(new IndexingOperationListener() {
@@ -98,17 +107,48 @@ public class ChangeRegister {
                             addChange(change);
                         }
 
+                        private boolean filter(String index, String type, String id, Source source) {
+                            if (source.getIndices() != null && !source.getIndices().contains(index)) {
+                                return false;
+                            }
+
+                            if (source.getTypes() != null && !source.getTypes().contains(type)) {
+                                return false;
+                            }
+
+                            if (source.getIds() != null && !source.getIds().contains(id)) {
+                                return false;
+                            }
+
+                            return true;
+                        }
+
+                        private boolean filter(String index, ChangeEvent change) {
+                            for (Source source : sources) {
+                                if (filter(index, change.getType(), change.getId(), source)) {
+                                    return true;
+                                }
+                            }
+
+                            return false;
+                        }
+
                         private void addChange(ChangeEvent change) {
+
+                            if (!filter(indexName, change)) {
+                                return;
+                            }
 
                             String message;
                             try {
                                 XContentBuilder builder = new XContentBuilder(JsonXContent.jsonXContent, new BytesStreamOutput());
                                 builder.startObject()
+                                        .field("_index", indexName)
                                         .field("_type", change.getType())
                                         .field("_id", change.getId())
-                                        .field("timestamp", change.getTimestamp())
-                                        .field("version", change.getVersion())
-                                        .field("operation", change.getOperation().toString())
+                                        .field("_timestamp", change.getTimestamp())
+                                        .field("_version", change.getVersion())
+                                        .field("_operation", change.getOperation().toString())
                                         .rawField("_source", change.getSource())
                                         .endObject();
 
