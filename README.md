@@ -12,7 +12,18 @@ Loosely based on https://github.com/derryx/elasticsearch-changes-plugin
 
 ## Installation
 
-    bin/plugin --url file:///path/to/plugin --install es-changes-feed-plugin
+Build the plugin:
+
+    cd /path/to/repo
+    mvn clean install
+    
+Install the plugin:   
+
+    cd /path/to/elasticsearch
+    bin/plugin --url file:///path/to/repo/target/es-changes-feed-plugin-1.4-SNAPSHOT.zip --install es-changes-feed-plugin
+
+Restart elasticsearch.
+
 
 ## Configuration
 
@@ -32,9 +43,24 @@ Each of the above patterns is can be either:
 
 So for example:
 
-`*` will match everything
+`*` will match everything. This is the default value
 
 `*/tweet/*` will match all tweets in any index
 
 `gb,us/user,tweet/*` will match all documents of type user or tweet in the gb or us indices
 
+## Messages
+
+Below is an example message the client might receive:
+
+    {
+        "_id": "testdoc",
+        "_index": "testidx",
+        "_operation": "INDEX",
+        "_source": {
+            "hello": "world"
+        },
+        "_timestamp": "2015-10-23T14:22:44.738Z",
+        "_type": "testtyp",
+        "_version": 1
+    }
