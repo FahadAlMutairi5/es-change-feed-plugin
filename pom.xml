@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.forgerock.customerportal</groupId>
-    <artifactId>es-changes-plugin</artifactId>
+    <groupId>com.forgerock.elasticsearch</groupId>
+    <artifactId>es-changes-feed-plugin</artifactId>
     <version>1.4-SNAPSHOT</version>
 
     <properties>
@@ -70,11 +70,6 @@
         </dependency>
 
         <!-- Test -->
-        <!--<dependency>
-            <groupId>org.glassfish.tyrus</groupId>
-            <artifactId>tyrus-client</artifactId>
-            <version>1.11</version>
-        </dependency>-->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

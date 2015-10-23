@@ -1,4 +1,4 @@
-package com.forgerock.customerportal.changes;
+package com.forgerock.elasticsearch.changes;
 
 import org.elasticsearch.common.bytes.BytesReference;
 import org.elasticsearch.common.joda.time.DateTime;

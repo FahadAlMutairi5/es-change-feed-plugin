@@ -1,4 +1,4 @@
-package com.forgerock.customerportal.changes;
+package com.forgerock.elasticsearch.changes;
 
 /**
  * Date: 06/08/2015

@@ -1,4 +1,4 @@
-package com.forgerock.customerportal.changes;
+package com.forgerock.elasticsearch.changes;
 
 import org.elasticsearch.common.inject.AbstractModule;
 import org.elasticsearch.common.logging.ESLogger;

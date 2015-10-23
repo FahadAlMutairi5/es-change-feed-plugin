@@ -1,4 +1,4 @@
-package com.forgerock.customerportal.changes;
+package com.forgerock.elasticsearch.changes;
 
 import org.elasticsearch.common.collect.ImmutableList;
 import org.elasticsearch.common.inject.Module;
@@ -12,11 +12,11 @@ import java.util.Collection;
  * Date: 10/08/2015
  * Time: 14:34
  */
-public class ChangesPlugin extends AbstractPlugin {
-    private final ESLogger log = Loggers.getLogger(ChangesPlugin.class);
+public class ChangesFeedPlugin extends AbstractPlugin {
+    private final ESLogger log = Loggers.getLogger(ChangesFeedPlugin.class);
     private final Collection<Class<? extends Module>> modules;
 
-    public ChangesPlugin() {
+    public ChangesFeedPlugin() {
         log.info("Starting Changes Plugin");
 
         modules= ImmutableList.<Class<? extends Module>>of(ChangesModule.class);
