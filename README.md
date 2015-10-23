@@ -24,6 +24,18 @@ Install the plugin:
 
 Restart elasticsearch.
 
+## Limitations
+
+There is a good explanation here of some of the difficulties inherent in a changes feed from elasticsearch:
+https://groups.google.com/d/msg/elasticsearch/S3fSfr4Cz3g/fyse5X4ofuYJ
+
+In particular:
+
+* Only sends live changes - if the client isn't connected at the time the plugin gets the change, it won't be sent
+* Doesn't send the initial state of any documents. You need to use one of the existing APIs for this
+* No handling of misbehaving endpoints beyond what the underlying websocket implementation does [see Project Tyrus](https://tyrus.java.net/)
+* Client needs to handle failing nodes
+
 
 ## Configuration
 
