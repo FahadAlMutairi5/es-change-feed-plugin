@@ -3,10 +3,12 @@
 A plugin for [elasticsearch](https://www.elastic.co/products/elasticsearch) which allows a client to create a 
 websocket connection to an elasticsearch node and receive a feed of changes from the database.
 
+Loosely based on https://github.com/derryx/elasticsearch-changes-plugin
+
 ## Requirements
 
-Elasticsearch 1.4
-Java 7
+* Elasticsearch 1.4
+* Java 7
 
 ## Installation
 
