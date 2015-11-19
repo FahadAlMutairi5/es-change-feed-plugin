@@ -49,7 +49,8 @@ public class WebSocket {
     }
 
     @OnClose
-    public void onClose() {
+    public void onClose(CloseReason reason) {
+        log.info("Closing websocket: "+reason);
         ChangeRegister.unregisterListener(this);
         this.session = null;
     }
