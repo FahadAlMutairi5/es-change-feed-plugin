@@ -159,9 +159,11 @@ public class ChangeRegister {
                                         .field("_id", change.getId())
                                         .field("_timestamp", change.getTimestamp())
                                         .field("_version", change.getVersion())
-                                        .field("_operation", change.getOperation().toString())
-                                        .rawField("_source", change.getSource())
-                                        .endObject();
+                                        .field("_operation", change.getOperation().toString());
+                                if (change.getSource() != null) {
+                                    builder.rawField("_source", change.getSource());
+                                }
+                                builder.endObject();
 
                                 message = builder.string();
                             } catch (IOException e) {
