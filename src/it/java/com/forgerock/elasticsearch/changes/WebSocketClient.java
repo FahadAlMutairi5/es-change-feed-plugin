@@ -43,7 +43,7 @@ public class WebSocketClient {
         ClientManager client = ClientManager.createClient();
         try {
             System.out.println("Connecting");
-            client.connectToServer(WebSocketClient.class, new URI("ws://localhost:9400/ws/_changes"));
+            client.connectToServer(WebSocketClient.class, new URI("ws://backstagedev1.internal.forgerock.com:9400/ws/_changes"));
             System.out.println("Connected");
             latch.await();
 
