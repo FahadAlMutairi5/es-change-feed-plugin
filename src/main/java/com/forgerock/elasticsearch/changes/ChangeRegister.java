@@ -31,7 +31,10 @@ import org.elasticsearch.indices.IndicesService;
 import org.glassfish.tyrus.server.Server;
 import org.joda.time.DateTime;
 
+import javax.websocket.DeploymentException;
 import java.io.IOException;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -57,11 +60,21 @@ public class ChangeRegister {
             sources.add(new Source(sourceStr));
         }
 
-        Server server = new Server("localhost", port, "/ws", null, WebSocket.class);
+        final Server server = new Server("localhost", port, "/ws", null, WebSocket.class);
 
         try {
             log.info("Starting WebSocket server");
-            server.start();
+            AccessController.doPrivileged(new PrivilegedAction() {
+                @Override
+                public Object run() {
+                    try {
+                        server.start();
+                        return null;
+                    } catch (DeploymentException e) {
+                        throw new RuntimeException("Failed to start server", e);
+                    }
+                }
+            });
             log.info("WebSocket server started");
         } catch (Exception e) {
             log.error("Failed to start WebSocket server",e);
