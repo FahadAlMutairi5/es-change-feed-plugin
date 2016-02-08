@@ -8,19 +8,21 @@ Loosely based on https://github.com/derryx/elasticsearch-changes-plugin
 ## Requirements
 
 * Elasticsearch 1.4 to 2.2
-* Java 7
+* Java 7+
 
-## Installation
+## Build
 
-Build the plugin:
-
-    cd /path/to/repo
+    git clone https://github.com/jurgc11/es-change-feed-plugin.git
+    cd es-change-feed-plugin
     mvn clean install
-    
-Install the plugin:   
 
-    cd /path/to/elasticsearch
-    bin/plugin --url file:///path/to/repo/target/es-changes-feed-plugin-1.4-SNAPSHOT.zip --install es-changes-feed-plugin
+## Installation     
+
+To install run the following command, replacing {version} with the version you want to install, e.g. v2.2.0. Note that 
+the plugin requires additional permissions which will automatically be granted using the below command (remove -b option
+if you want to manually approve these permissions)
+
+    bin/plugin install -b https://github.com/jurgc11/es-change-feed-plugin/releases/download/{version}/es-changes-feed-plugin.zip
 
 Restart elasticsearch.
 
