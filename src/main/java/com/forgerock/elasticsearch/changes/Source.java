@@ -16,7 +16,7 @@ package com.forgerock.elasticsearch.changes;
     limitations under the License.
 */
 
-import org.elasticsearch.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSet;
 
 import java.util.Set;
 

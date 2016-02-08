@@ -16,27 +16,26 @@ package com.forgerock.elasticsearch.changes;
     limitations under the License.
 */
 
-import org.elasticsearch.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableList;
 import org.elasticsearch.common.inject.Module;
 import org.elasticsearch.common.logging.ESLogger;
 import org.elasticsearch.common.logging.Loggers;
-import org.elasticsearch.plugins.AbstractPlugin;
+import org.elasticsearch.plugins.Plugin;
 
 import java.util.Collection;
 
-public class ChangesFeedPlugin extends AbstractPlugin {
+public class ChangesFeedPlugin extends Plugin {
     private final ESLogger log = Loggers.getLogger(ChangesFeedPlugin.class);
-    private final Collection<Class<? extends Module>> modules;
+
 
     public ChangesFeedPlugin() {
         log.info("Starting Changes Plugin");
-
-        modules= ImmutableList.<Class<? extends Module>>of(ChangesModule.class);
     }
 
     @Override
-    public Collection<Class<? extends Module>> modules() {
-        return modules;
+    public Collection<Module> nodeModules() {
+        Module module = new ChangesModule();
+        return ImmutableList.of(module);
     }
 
     public String description() {

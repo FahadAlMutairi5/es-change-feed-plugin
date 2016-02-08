@@ -18,7 +18,6 @@ package com.forgerock.elasticsearch.changes;
 
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.io.stream.BytesStreamOutput;
-import org.elasticsearch.common.joda.time.DateTime;
 import org.elasticsearch.common.logging.ESLogger;
 import org.elasticsearch.common.logging.Loggers;
 import org.elasticsearch.common.settings.Settings;
@@ -26,12 +25,16 @@ import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.json.JsonXContent;
 import org.elasticsearch.index.engine.Engine;
 import org.elasticsearch.index.indexing.IndexingOperationListener;
-import org.elasticsearch.index.shard.service.IndexShard;
+import org.elasticsearch.index.shard.IndexShard;
 import org.elasticsearch.indices.IndicesLifecycle;
 import org.elasticsearch.indices.IndicesService;
 import org.glassfish.tyrus.server.Server;
+import org.joda.time.DateTime;
 
+import javax.websocket.DeploymentException;
 import java.io.IOException;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -57,11 +60,25 @@ public class ChangeRegister {
             sources.add(new Source(sourceStr));
         }
 
-        Server server = new Server("localhost", port, "/ws", null, WebSocket.class);
+        final Server server = new Server("localhost", port, "/ws", null, WebSocket.class) ;
 
         try {
             log.info("Starting WebSocket server");
-            server.start();
+            AccessController.doPrivileged(new PrivilegedAction() {
+                @Override
+                public Object run() {
+                    try {
+                        // Tyrus tries to load the server code using reflection. In Elasticsearch 2.x Java
+                        // security manager is used which breaks the reflection code as it can't find the class.
+                        // This is a workaround for that
+                        Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+                        server.start();
+                        return null;
+                    } catch (DeploymentException e) {
+                        throw new RuntimeException("Failed to start server", e);
+                    }
+                }
+            });
             log.info("WebSocket server started");
         } catch (Exception e) {
             log.error("Failed to start WebSocket server",e);

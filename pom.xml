@@ -6,7 +6,7 @@
 
     <groupId>com.forgerock.elasticsearch</groupId>
     <artifactId>es-changes-feed-plugin</artifactId>
-    <version>1.4.0</version>
+    <version>2.2.0</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -35,8 +35,8 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <id>make-assembly</id> <!-- this is used for inheritance merges -->
-                        <phase>package</phase> <!-- bind to the packaging phase -->
+                        <id>make-assembly</id>
+                        <phase>package</phase>
                         <goals>
                             <goal>single</goal>
                         </goals>
@@ -50,7 +50,7 @@
         <dependency>
             <groupId>org.elasticsearch</groupId>
             <artifactId>elasticsearch</artifactId>
-            <version>1.4.4</version>
+            <version>2.2.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -61,13 +61,13 @@
         <dependency>
             <groupId>org.glassfish.tyrus</groupId>
             <artifactId>tyrus-server</artifactId>
-            <version>1.11</version>
+            <version>1.12</version>
         </dependency>
 
         <dependency>
             <groupId>org.glassfish.tyrus</groupId>
             <artifactId>tyrus-container-grizzly-server</artifactId>
-            <version>1.11</version>
+            <version>1.12</version>
         </dependency>
 
         <!-- Test -->

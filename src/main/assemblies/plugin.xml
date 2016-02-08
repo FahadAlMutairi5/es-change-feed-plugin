@@ -12,4 +12,14 @@
             <useTransitiveDependencies>true</useTransitiveDependencies>
         </dependencySet>
     </dependencySets>
+    <files>
+        <file>
+            <source>src/main/resources/plugin-descriptor.properties</source>
+            <outputDirectory>/</outputDirectory>
+        </file>
+        <file>
+            <source>src/main/resources/plugin-security.policy</source>
+            <outputDirectory>/</outputDirectory>
+        </file>
+    </files>
 </assembly>
