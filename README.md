@@ -7,7 +7,7 @@ Loosely based on https://github.com/derryx/elasticsearch-changes-plugin
 
 ## Requirements
 
-* Elasticsearch 1.4
+* Elasticsearch 1.4 to 2.2
 * Java 7
 
 ## Installation
