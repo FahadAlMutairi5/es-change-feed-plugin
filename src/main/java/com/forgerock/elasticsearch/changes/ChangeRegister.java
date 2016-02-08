@@ -60,7 +60,7 @@ public class ChangeRegister {
             sources.add(new Source(sourceStr));
         }
 
-        final Server server = new Server("localhost", port, "/ws", null, WebSocket.class);
+        final Server server = new Server("localhost", port, "/ws", null, WebSocket.class) ;
 
         try {
             log.info("Starting WebSocket server");
@@ -68,6 +68,10 @@ public class ChangeRegister {
                 @Override
                 public Object run() {
                     try {
+                        // Tyrus tries to load the server code using reflection. In Elasticsearch 2.x Java
+                        // security manager is used which breaks the reflection code as it can't find the class.
+                        // This is a workaround for that
+                        Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
                         server.start();
                         return null;
                     } catch (DeploymentException e) {
