@@ -121,7 +121,7 @@ public class ChangeRegister {
                         }
 
                         @Override
-                        public void postIndex(Engine.Index index) {
+                        public void postIndex(Engine.Index index, boolean created) {
 
                             ChangeEvent change=new ChangeEvent(
                                     index.id(),
