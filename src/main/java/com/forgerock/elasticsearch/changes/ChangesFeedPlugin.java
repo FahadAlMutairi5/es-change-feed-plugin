@@ -16,33 +16,81 @@ package com.forgerock.elasticsearch.changes;
     limitations under the License.
 */
 
-import com.google.common.collect.ImmutableList;
-import org.elasticsearch.common.inject.Module;
-import org.elasticsearch.common.logging.ESLogger;
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.common.logging.Loggers;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.index.IndexModule;
 import org.elasticsearch.plugins.Plugin;
+import org.glassfish.tyrus.server.Server;
 
-import java.util.Collection;
+import javax.websocket.DeploymentException;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class ChangesFeedPlugin extends Plugin {
-    private final ESLogger log = Loggers.getLogger(ChangesFeedPlugin.class);
 
+    private static final String SETTING_PRIMARY_SHARD_ONLY = "changes.primaryShardOnly";
+    private static final String SETTING_PORT = "changes.port";
+    private static final String SETTING_LISTEN_SOURCE = "changes.listenSource";
 
-    public ChangesFeedPlugin() {
+    static final Map<String, WebSocket> LISTENERS = new HashMap<String, WebSocket>();//TODO urgh
+
+    private final Logger log = Loggers.getLogger(ChangesFeedPlugin.class);
+    final Set<Source> sources;
+
+    public ChangesFeedPlugin(Settings settings) {
         log.info("Starting Changes Plugin");
+
+        final boolean allShards = !settings.getAsBoolean(SETTING_PRIMARY_SHARD_ONLY, Boolean.FALSE);
+        final int port = settings.getAsInt(SETTING_PORT, 9400);
+        final String[] sourcesStr = settings.getAsArray(SETTING_LISTEN_SOURCE, new String[]{"*"});
+        this.sources = new HashSet<>();
+        for(String sourceStr : sourcesStr) {
+            sources.add(new Source(sourceStr));
+        }
+
+        final Server server = new Server("localhost", port, "/ws", null, WebSocket.class) ;
+
+        try {
+            log.info("Starting WebSocket server");
+            AccessController.doPrivileged(new PrivilegedAction() {
+                @Override
+                public Object run() {
+                    try {
+                        // Tyrus tries to load the server code using reflection. In Elasticsearch 2.x Java
+                        // security manager is used which breaks the reflection code as it can't find the class.
+                        // This is a workaround for that
+                        Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+                        server.start();
+                        return null;
+                    } catch (DeploymentException e) {
+                        throw new RuntimeException("Failed to start server", e);
+                    }
+                }
+            });
+            log.info("WebSocket server started");
+        } catch (Exception e) {
+            log.error("Failed to start WebSocket server",e);
+            throw new RuntimeException(e);
+        }
+
     }
 
     @Override
-    public Collection<Module> nodeModules() {
-        Module module = new ChangesModule();
-        return ImmutableList.of(module);
+    public void onIndexModule(IndexModule indexModule) {
+        indexModule.addIndexOperationListener(new IndexListener(sources));
+        super.onIndexModule(indexModule);
     }
 
-    public String description() {
-        return "Changes Plugin";
+    public static void registerListener(WebSocket webSocket) {
+        LISTENERS.put(webSocket.getId(), webSocket);
     }
 
-    public String name() {
-        return "changes";
+    public static void unregisterListener(WebSocket webSocket) {
+        LISTENERS.remove(webSocket.getId());
     }
 }

@@ -16,7 +16,7 @@ package com.forgerock.elasticsearch.changes;
     limitations under the License.
 */
 
-import org.elasticsearch.common.logging.ESLogger;
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.common.logging.Loggers;
 
 import javax.websocket.*;
@@ -25,14 +25,14 @@ import javax.websocket.server.ServerEndpoint;
 @ServerEndpoint(value = "/_changes")
 public class WebSocket {
 
-    private final ESLogger log = Loggers.getLogger(WebSocket.class);
+    private final Logger log = Loggers.getLogger(WebSocket.class);
     private Session session;
 
     @OnOpen
     public void onOpen(Session session) {
         log.info("Connected ... " + session.getId());
         this.session = session;
-        ChangeRegister.registerListener(this);
+        ChangesFeedPlugin.registerListener(this);
     }
 
     public void sendMessage(String message) {
@@ -51,7 +51,7 @@ public class WebSocket {
     @OnClose
     public void onClose(CloseReason reason) {
         log.info("Closing websocket: "+reason);
-        ChangeRegister.unregisterListener(this);
+        ChangesFeedPlugin.unregisterListener(this);
         this.session = null;
     }
 
