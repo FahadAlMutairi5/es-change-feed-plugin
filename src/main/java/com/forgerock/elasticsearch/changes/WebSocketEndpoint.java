@@ -23,16 +23,16 @@ import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 
 @ServerEndpoint(value = "/_changes")
-public class WebSocket {
+public class WebSocketEndpoint {
 
-    private final Logger log = Loggers.getLogger(WebSocket.class);
+    private final Logger log = Loggers.getLogger(WebSocketEndpoint.class);
     private Session session;
 
     @OnOpen
     public void onOpen(Session session) {
         log.info("Connected ... " + session.getId());
         this.session = session;
-        ChangesFeedPlugin.registerListener(this);
+        ChangesFeedPlugin.getRegister().registerListener(this);
     }
 
     public void sendMessage(String message) {
@@ -51,7 +51,7 @@ public class WebSocket {
     @OnClose
     public void onClose(CloseReason reason) {
         log.info("Closing websocket: "+reason);
-        ChangesFeedPlugin.unregisterListener(this);
+        ChangesFeedPlugin.getRegister().unregisterListener(this);
         this.session = null;
     }
 

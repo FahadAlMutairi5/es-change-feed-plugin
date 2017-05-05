@@ -16,8 +16,8 @@ package com.forgerock.elasticsearch.changes;
     limitations under the License.
 */
 
-import com.google.common.collect.ImmutableSet;
-
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
 public class Source {
@@ -28,16 +28,16 @@ public class Source {
     public Source(String source) {
         String[] parts = source.split("/");
 
-        indices = parts[0].equals("*") ? null : ImmutableSet.copyOf(parts[0].split(","));
+        indices = parts[0].equals("*") ? null : new HashSet<>(Arrays.asList(parts[0].split(",")));
 
         if (parts.length > 1) {
-            types = parts[1].equals("*") ? null : ImmutableSet.copyOf(parts[1].split(","));
+            types = parts[1].equals("*") ? null : new HashSet<>(Arrays.asList(parts[1].split(",")));
         } else {
             types = null;
         }
 
         if (parts.length > 2) {
-            ids = parts[2].equals("*") ? null : ImmutableSet.copyOf(parts[2].split(","));
+            ids = parts[2].equals("*") ? null : new HashSet<>(Arrays.asList(parts[2].split(",")));
         } else {
             ids = null;
         }

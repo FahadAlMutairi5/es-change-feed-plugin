@@ -20,6 +20,7 @@ import org.elasticsearch.common.bytes.BytesReference;
 import org.joda.time.DateTime;
 
 public class ChangeEvent {
+    private final String index;
     private final String id;
     private final String type;
     private final DateTime timestamp;
@@ -31,13 +32,19 @@ public class ChangeEvent {
         INDEX,CREATE,DELETE
     }
 
-    public ChangeEvent(String id, String type, DateTime timestamp, Operation operation, long version, BytesReference source) {
+    public ChangeEvent(String index, String type, String id, DateTime timestamp, Operation operation, long version, BytesReference source) {
+
+        this.index = index;
         this.id = id;
         this.type = type;
         this.timestamp = timestamp;
         this.operation = operation;
         this.version = version;
         this.source = source;
+    }
+
+    public String getIndex() {
+        return index;
     }
 
     public String getId() {

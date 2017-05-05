@@ -18,25 +18,28 @@ import java.util.Set;
  * Date: 04/05/2017
  * Time: 16:54
  */
-public class IndexListener implements IndexingOperationListener {
+public class WebSocketIndexListener implements IndexingOperationListener {
 
-    private final Logger log = Loggers.getLogger(IndexListener.class);
+    private final Logger log = Loggers.getLogger(WebSocketIndexListener.class);
 
     private final Set<Source> sources;
+    private final WebSocketRegister register;
 
-    IndexListener(Set<Source> sources) {
+    WebSocketIndexListener(Set<Source> sources, WebSocketRegister register) {
         this.sources = sources;
+        this.register = register;
     }
 
     @Override
     public void postIndex(ShardId shardId, Engine.Index index, Engine.IndexResult result) {
 
         ChangeEvent change=new ChangeEvent(
-                index.id(),
+                shardId.getIndex().getName(),
                 index.type(),
+                index.id(),
                 new DateTime(),
                 result.isCreated() ? ChangeEvent.Operation.CREATE : ChangeEvent.Operation.INDEX,
-                index.version(),
+                result.getVersion(),
                 index.source()
         );
 
@@ -47,18 +50,19 @@ public class IndexListener implements IndexingOperationListener {
     public void postDelete(ShardId shardId, Engine.Delete delete, Engine.DeleteResult result) {
 
         ChangeEvent change=new ChangeEvent(
-                delete.id(),
+                shardId.getIndex().getName(),
                 delete.type(),
+                delete.id(),
                 new DateTime(),
                 ChangeEvent.Operation.DELETE,
-                delete.version(),
+                result.getVersion(),
                 null
         );
 
         addChange(change);
     }
 
-    private boolean filter(String index, String type, String id, Source source) {
+    private static boolean filter(String index, String type, String id, Source source) {
         if (source.getIndices() != null && !source.getIndices().contains(index)) {
             return false;
         }
@@ -74,9 +78,9 @@ public class IndexListener implements IndexingOperationListener {
         return true;
     }
 
-    private boolean filter(String index, ChangeEvent change) {
+    static boolean filter(ChangeEvent change, Set<Source> sources) {
         for (Source source : sources) {
-            if (filter(index, change.getType(), change.getId(), source)) {
+            if (filter(change.getIndex(), change.getType(), change.getId(), source)) {
                 return true;
             }
         }
@@ -86,8 +90,7 @@ public class IndexListener implements IndexingOperationListener {
 
     private void addChange(ChangeEvent change) {
 
-        String indexName = "";
-        if (!filter(indexName, change)) {
+        if (!filter(change, sources)) {
             return;
         }
 
@@ -95,7 +98,7 @@ public class IndexListener implements IndexingOperationListener {
         try {
             XContentBuilder builder = new XContentBuilder(JsonXContent.jsonXContent, new BytesStreamOutput());
             builder.startObject()
-                    .field("_index", indexName)
+                    .field("_index", change.getIndex())
                     .field("_type", change.getType())
                     .field("_id", change.getId())
                     .field("_timestamp", change.getTimestamp())
@@ -112,7 +115,7 @@ public class IndexListener implements IndexingOperationListener {
             return;
         }
 
-        for (WebSocket listener : ChangesFeedPlugin.LISTENERS.values()) {
+        for (WebSocketEndpoint listener : register.getListeners()) {
             try {
                 listener.sendMessage(message);
             } catch (Exception e) {

@@ -7,8 +7,8 @@ Loosely based on https://github.com/derryx/elasticsearch-changes-plugin
 
 ## Requirements
 
-* Elasticsearch 1.4, 2.2, 2.3, 2.4
-* Java 7+
+* Elasticsearch 1.4, 2.2, 2.3, 2.4, 5.3
+* Java 8+
 
 ## Prebuilt Binary Installation     
 
@@ -43,9 +43,6 @@ This plugin has the following limitations:
 
 ### changes.port
 Port the websocket will use. Default is 9400
-
-### changes.primaryShardOnly 
-Whether only changes to the primary shards or changes to all shards are sent. Default is false
 
 ### changes.listenSource 
 Which indices, types and documents the plugin will listen to in the format `<index_pattern>[/<type_pattern>[/<document_pattern>]]`.
