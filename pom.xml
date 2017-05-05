@@ -50,7 +50,7 @@
         <dependency>
             <groupId>org.elasticsearch</groupId>
             <artifactId>elasticsearch</artifactId>
-            <version>5.3.2</version>
+            <version>5.4.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -75,12 +75,6 @@
             <artifactId>tyrus-container-grizzly-server</artifactId>
             <version>1.13</version>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>com.google.guava</groupId>-->
-            <!--<artifactId>guava</artifactId>-->
-            <!--<version>20.0</version>-->
-        <!--</dependency>-->
-
 
         <!-- Test -->
         <dependency>
