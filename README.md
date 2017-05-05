@@ -16,7 +16,7 @@ To install run the following command, replacing {version} with the version you w
 the plugin requires additional permissions which will automatically be granted using the below command (remove -b option
 if you want to manually approve these permissions)
 
-    bin/plugin install -b https://github.com/jurgc11/es-change-feed-plugin/releases/download/{version}/es-changes-feed-plugin.zip
+    bin/elasticsearch-plugin install -b https://github.com/jurgc11/es-change-feed-plugin/releases/download/{version}/es-changes-feed-plugin.zip
 
 Restart elasticsearch.
 

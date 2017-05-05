@@ -7,7 +7,7 @@
     <includeBaseDirectory>false</includeBaseDirectory>
     <dependencySets>
         <dependencySet>
-            <outputDirectory>/</outputDirectory>
+            <outputDirectory>/elasticsearch/</outputDirectory>
             <useProjectArtifact>true</useProjectArtifact>
             <useTransitiveDependencies>true</useTransitiveDependencies>
         </dependencySet>
@@ -15,11 +15,11 @@
     <files>
         <file>
             <source>src/main/resources/plugin-descriptor.properties</source>
-            <outputDirectory>/</outputDirectory>
+            <outputDirectory>/elasticsearch/</outputDirectory>
         </file>
         <file>
             <source>src/main/resources/plugin-security.policy</source>
-            <outputDirectory>/</outputDirectory>
+            <outputDirectory>/elasticsearch/</outputDirectory>
         </file>
     </files>
 </assembly>
