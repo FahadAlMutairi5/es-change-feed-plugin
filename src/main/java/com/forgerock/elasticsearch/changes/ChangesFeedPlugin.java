@@ -18,11 +18,14 @@ package com.forgerock.elasticsearch.changes;
 
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.common.logging.Loggers;
+import org.elasticsearch.common.settings.Setting;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.IndexModule;
 import org.elasticsearch.plugins.Plugin;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -30,29 +33,46 @@ public class ChangesFeedPlugin extends Plugin {
 
     private static final String SETTING_PORT = "changes.port";
     private static final String SETTING_LISTEN_SOURCE = "changes.listenSource";
+    private static final String SETTING_DISABLE = "changes.disable";
 
     private final Logger log = Loggers.getLogger(ChangesFeedPlugin.class);
     private final Set<Source> sources;
+    private final boolean enabled;
     private final static WebSocketRegister REGISTER = new WebSocketRegister();
 
     public ChangesFeedPlugin(Settings settings) {
         log.info("Starting Changes Plugin");
 
-        int port = settings.getAsInt(SETTING_PORT, 9400);
-        String[] sourcesStr = settings.getAsArray(SETTING_LISTEN_SOURCE, new String[]{"*"});
-        this.sources = Arrays.stream(sourcesStr)
-                .map(Source::new)
-                .collect(Collectors.toSet());
+        enabled = !settings.getAsBoolean(SETTING_DISABLE, false);
 
-        WebSocketServer server = new WebSocketServer(port);
-        server.start();
+        if (enabled) {
+            int port = settings.getAsInt(SETTING_PORT, 9400);
+            String[] sourcesStr = settings.getAsArray(SETTING_LISTEN_SOURCE, new String[]{"*"});
+            this.sources = Arrays.stream(sourcesStr)
+                    .map(Source::new)
+                    .collect(Collectors.toSet());
 
+            WebSocketServer server = new WebSocketServer(port);
+            server.start();
+        } else {
+            sources = null;
+        }
     }
 
     @Override
     public void onIndexModule(IndexModule indexModule) {
-        indexModule.addIndexOperationListener(new WebSocketIndexListener(sources, REGISTER));
+        if (enabled) {
+            indexModule.addIndexOperationListener(new WebSocketIndexListener(sources, REGISTER));
+        }
         super.onIndexModule(indexModule);
+    }
+
+    public List<Setting<?>> getSettings() {
+        List<Setting<?>> settings = new ArrayList<>();
+        settings.add(Setting.simpleString(SETTING_PORT, Setting.Property.NodeScope));
+        settings.add(Setting.simpleString(SETTING_LISTEN_SOURCE, Setting.Property.NodeScope));
+        settings.add(Setting.simpleString(SETTING_DISABLE, Setting.Property.NodeScope));
+        return settings;
     }
 
     static WebSocketRegister getRegister() {

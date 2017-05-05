@@ -60,6 +60,10 @@ So for example:
 
 `gb,us/user,tweet/*` will match all documents of type user or tweet in the gb or us indices
 
+### changes.disable
+Disable the plugin through config. Setting this to true will stop the websocket server 
+from starting up and will not intercept and change requests.
+
 ## Messages
 
 Below is an example message the client might receive:
