@@ -66,7 +66,8 @@ from starting up and will not intercept and change requests.
 
 ## Messages
 
-Below is an example message the client might receive:
+The websocket will be on the path `/ws/_changes`. When you connect, you should start receiving messages which look 
+something like this: 
 
     {
         "_id": "testdoc",
