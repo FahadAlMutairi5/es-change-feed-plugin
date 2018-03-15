@@ -14,7 +14,7 @@
     </dependencySets>
     <files>
         <file>
-            <source>src/main/resources/plugin-descriptor.properties</source>
+            <source>target/classes/plugin-descriptor.properties</source>
             <outputDirectory>/elasticsearch/</outputDirectory>
         </file>
         <file>

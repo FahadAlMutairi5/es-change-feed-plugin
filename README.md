@@ -20,11 +20,22 @@ if you want to manually approve these permissions)
 
 Restart elasticsearch.
 
+Note that Elasticsearch plugins have to be built for the exact version of Elasticsearch which they are to be installed 
+in. If a prebuilt binary isn't available for your version of Elasticsearch, then you'll need to build from source.
+
 ## Build From Source
 
     git clone https://github.com/jurgc11/es-change-feed-plugin.git
     cd es-change-feed-plugin
+
+Update the `version` and `elasticsearch.version` property in the `pom.xml`. Then to build: 
+
     mvn clean install
+    
+### Troubleshooting
+
+When changing the version you may run into problems when the Elasticsearch API changes. Try taking the nearest branch 
+to the version you're trying to build for.   
 
 ## Limitations
 
