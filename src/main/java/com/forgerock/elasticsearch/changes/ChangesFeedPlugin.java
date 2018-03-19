@@ -23,10 +23,7 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.IndexModule;
 import org.elasticsearch.plugins.Plugin;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ChangesFeedPlugin extends Plugin {
@@ -47,8 +44,8 @@ public class ChangesFeedPlugin extends Plugin {
 
         if (enabled) {
             int port = settings.getAsInt(SETTING_PORT, 9400);
-            String[] sourcesStr = settings.getAsArray(SETTING_LISTEN_SOURCE, new String[]{"*"});
-            this.sources = Arrays.stream(sourcesStr)
+            List<String> sourcesStr = settings.getAsList(SETTING_LISTEN_SOURCE, Collections.singletonList("*"));
+            this.sources = sourcesStr.stream()
                     .map(Source::new)
                     .collect(Collectors.toSet());
 
