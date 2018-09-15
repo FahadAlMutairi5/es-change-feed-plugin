@@ -6,10 +6,10 @@
 
     <groupId>com.forgerock.elasticsearch</groupId>
     <artifactId>es-changes-feed-plugin</artifactId>
-    <version>6.2.2</version>
+    <version>6.3.0</version>
 
     <properties>
-        <elasticsearch.version>6.2.2</elasticsearch.version>
+        <elasticsearch.version>6.3.0</elasticsearch.version>
         <plugin.java.version>1.8</plugin.java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
