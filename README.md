@@ -7,7 +7,7 @@ Loosely based on https://github.com/derryx/elasticsearch-changes-plugin
 
 ## Requirements
 
-* Elasticsearch 1.x, 2.x, 5.x, 6.x (experimental)
+* Elasticsearch 1.x, 2.x, 5.x, 6.x
 * Java 8+
 
 ## Prebuilt Binary Installation     
@@ -25,7 +25,7 @@ in. If a prebuilt binary isn't available for your version of Elasticsearch, then
 
 ## Build From Source
 
-    git clone https://github.com/jurgc11/es-change-feed-plugin.git
+    git clone https://github.com/ForgeRock/es-change-feed-plugin.git
     cd es-change-feed-plugin
 
 Update the `version` and `elasticsearch.version` property in the `pom.xml`. Then to build: 
