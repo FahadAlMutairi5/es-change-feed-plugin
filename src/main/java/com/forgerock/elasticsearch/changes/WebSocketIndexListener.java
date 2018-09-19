@@ -5,6 +5,7 @@ import org.elasticsearch.common.io.stream.BytesStreamOutput;
 import org.elasticsearch.common.logging.Loggers;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.common.Strings;
 import org.elasticsearch.common.xcontent.json.JsonXContent;
 import org.elasticsearch.index.engine.Engine;
 import org.elasticsearch.index.shard.IndexingOperationListener;
@@ -93,7 +94,6 @@ public class WebSocketIndexListener implements IndexingOperationListener {
         if (!filter(change, sources)) {
             return;
         }
-
         String message;
         try {
             XContentBuilder builder = new XContentBuilder(JsonXContent.jsonXContent, new BytesStreamOutput());
@@ -105,11 +105,10 @@ public class WebSocketIndexListener implements IndexingOperationListener {
                     .field("_version", change.getVersion())
                     .field("_operation", change.getOperation().toString());
             if (change.getSource() != null) {
-                builder.rawField("_source", change.getSource(), XContentType.JSON);
+                builder.rawField("_source", change.getSource().streamInput(), XContentType.JSON);
             }
             builder.endObject();
-
-            message = builder.string();
+            message = Strings.toString(builder);
         } catch (IOException e) {
             log.error("Failed to write JSON", e);
             return;
