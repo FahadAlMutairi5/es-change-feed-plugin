@@ -100,7 +100,7 @@ public class WebSocketIndexListener implements IndexingOperationListener {
         Set<String> filters = Sets.newHashSet(
                 "_source.transaction.**",
                 "_source.timestamp.us");
-        
+          
         try {
             XContentBuilder builder = new XContentBuilder(JsonXContent.jsonXContent, new BytesStreamOutput(), filters);
             builder.startObject()
