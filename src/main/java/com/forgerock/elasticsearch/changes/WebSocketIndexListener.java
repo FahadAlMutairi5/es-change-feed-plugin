@@ -3,6 +3,7 @@ package com.forgerock.elasticsearch.changes;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.common.io.stream.BytesStreamOutput;
 import org.elasticsearch.common.logging.Loggers;
+import org.elasticsearch.common.util.set.Sets;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.common.Strings;
@@ -95,8 +96,13 @@ public class WebSocketIndexListener implements IndexingOperationListener {
             return;
         }
         String message;
+        
+        Set<String> filters = Sets.newHashSet(
+                "_source.transaction.**",
+                "_source.timestamp.us");
+        
         try {
-            XContentBuilder builder = new XContentBuilder(JsonXContent.jsonXContent, new BytesStreamOutput());
+            XContentBuilder builder = new XContentBuilder(JsonXContent.jsonXContent, new BytesStreamOutput(), filters);
             builder.startObject()
                     .field("_index", change.getIndex())
                     .field("_type", change.getType())
