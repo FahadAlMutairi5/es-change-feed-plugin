@@ -40,7 +40,7 @@ to the version you're trying to build for.
 ## Limitations
 
 There is a good explanation here of some of the difficulties inherent in a changes feed from elasticsearch:
-https://groups.google.com/d/msg/elasticsearch/S3fSfr4Cz3g/fyse5X4ofuYJ
+https://discuss.elastic.co/t/notifications-from-elasticsearch-when-documents-are-added/5106/19
 
 This plugin has the following limitations:
 
