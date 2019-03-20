@@ -24,6 +24,7 @@ public class Source {
     private final Set<String> indices;
     private final Set<String> types;
     private final Set<String> ids;
+    private final Set<String> fields;
 
     public Source(String source) {
         String[] parts = source.split("/");
@@ -41,6 +42,12 @@ public class Source {
         } else {
             ids = null;
         }
+        
+        if (parts.length > 3) {
+            fields = parts[3].equals("*") ? null : new HashSet<>(Arrays.asList(parts[3].split(",")));
+        } else {
+        	fields = null;
+        }
     }
 
     public Set<String> getIds() {
@@ -53,6 +60,10 @@ public class Source {
 
     public Set<String> getTypes() {
         return types;
+    }
+    
+    public Set<String> getFileds() {
+        return fields;
     }
 
 }

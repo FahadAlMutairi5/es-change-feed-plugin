@@ -14,6 +14,7 @@ import org.elasticsearch.index.shard.ShardId;
 import org.joda.time.DateTime;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -65,9 +66,19 @@ public class WebSocketIndexListener implements IndexingOperationListener {
     }
 
     private static boolean filter(String index, String type, String id, Source source) {
-        if (source.getIndices() != null && !source.getIndices().contains(index)) {
-            return false;
-        }
+    	
+        if (source.getIndices() != null && !source.getIndices().contains(index) ) {
+        	boolean result = false;
+        	
+        	for (String s : source.getIndices() ) {	      		        		
+        		if (index.startsWith(s)) {
+                    result = true;
+                    break;
+        		}      		
+        	}
+        	if (result == false )
+            return false;			 	
+        } 
 
         if (source.getTypes() != null && !source.getTypes().contains(type)) {
             return false;
@@ -97,10 +108,13 @@ public class WebSocketIndexListener implements IndexingOperationListener {
         }
         String message;
         
-        Set<String> filters = Sets.newHashSet(
-                "_source.transaction.**",
-                "_source.timestamp.us");
-          
+        Set<String> filters = new HashSet<>();
+        
+        for (Source source : sources) {
+        	if (source.getFileds()!=null)
+        		filters.addAll(source.getFileds());
+        }
+           
         try {
             XContentBuilder builder = new XContentBuilder(JsonXContent.jsonXContent, new BytesStreamOutput(), filters);
             builder.startObject()
