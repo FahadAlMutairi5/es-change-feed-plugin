@@ -1,5 +1,11 @@
 package com.forgerock.elasticsearch.changes;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 /*
     Copyright 2015 ForgeRock AS
 
@@ -22,9 +28,6 @@ import org.elasticsearch.common.settings.Setting;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.IndexModule;
 import org.elasticsearch.plugins.Plugin;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 public class ChangesFeedPlugin extends Plugin {
 
