@@ -63,6 +63,8 @@ Each of the above patterns is can be either:
 * `*` All indices, types or documents
 * `id[,id]*` List of specific indices, types or documents
 
+Only for index_pattern, prefixes are matched. e.g. my-index-* would match anything which starts with my-index-
+
 So for example:
 
 `*` will match everything. This is the default value
@@ -71,9 +73,24 @@ So for example:
 
 `gb,us/user,tweet/*` will match all documents of type user or tweet in the gb or us indices
 
+`my-index-*/*/*` would match anything in any index that starts with my-index-
+
+
+
 ### changes.disable
 Disable the plugin through config. Setting this to true will stop the websocket server 
 from starting up and will not intercept and change requests.
+
+### changes.field.includes
+To receive filtered fields when changes occur, useful in huge documents
+* `*` All fields
+* `id[,id]*` List of specific fields
+
+So for example:
+
+`*` will match everything. This is the default value
+
+`_source.transaction.duration.us` will filter the transaction.duration.us field
 
 ## Messages
 

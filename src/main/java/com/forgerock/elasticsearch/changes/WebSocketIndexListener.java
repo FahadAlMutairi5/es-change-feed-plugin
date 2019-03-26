@@ -73,14 +73,15 @@ public class WebSocketIndexListener implements IndexingOperationListener {
  
         	boolean result = false;        	
         	for (String s : source.getIndices() ) {	      		        		
-        		if (index.startsWith(s)) {
+        		if ( s != null && s.length() > 0 && s.endsWith("*") && index.startsWith(s.substring(0, s.length()-1))) {
                     result = true;
                     break;
         		}      		
         	}
         	
-        	if (result == false )
-            return false;			 	
+        	if (result == false ) {
+            return false;		
+        	}
         } 
 
         if (source.getTypes() != null && !source.getTypes().contains(type)) {

@@ -34,7 +34,7 @@ public class ChangesFeedPlugin extends Plugin {
     private static final String SETTING_PORT = "changes.port";
     private static final String SETTING_LISTEN_SOURCE = "changes.listenSource";
     private static final String SETTING_DISABLE = "changes.disable";
-    private static final String SETTING_FILTER = "changes.filter";
+    private static final String SETTING_FILTER = "changes.field.includes";
 
 
     private final Logger log = Loggers.getLogger(ChangesFeedPlugin.class);
