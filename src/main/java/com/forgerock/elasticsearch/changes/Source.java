@@ -41,6 +41,7 @@ public class Source {
         } else {
             ids = null;
         }
+        
     }
 
     public Set<String> getIds() {

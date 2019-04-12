@@ -1,19 +1,21 @@
 package com.forgerock.elasticsearch.changes;
 
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.apache.logging.log4j.Logger;
+import org.elasticsearch.common.Strings;
 import org.elasticsearch.common.io.stream.BytesStreamOutput;
 import org.elasticsearch.common.logging.Loggers;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentType;
-import org.elasticsearch.common.Strings;
 import org.elasticsearch.common.xcontent.json.JsonXContent;
 import org.elasticsearch.index.engine.Engine;
 import org.elasticsearch.index.shard.IndexingOperationListener;
 import org.elasticsearch.index.shard.ShardId;
 import org.joda.time.DateTime;
-
-import java.io.IOException;
-import java.util.Set;
 
 /**
  * Date: 04/05/2017
@@ -24,10 +26,12 @@ public class WebSocketIndexListener implements IndexingOperationListener {
     private final Logger log = Loggers.getLogger(WebSocketIndexListener.class);
 
     private final Set<Source> sources;
+    private final List<String> filter;
     private final WebSocketRegister register;
 
-    WebSocketIndexListener(Set<Source> sources, WebSocketRegister register) {
+    WebSocketIndexListener(Set<Source> sources, List<String> filter, WebSocketRegister register) {
         this.sources = sources;
+        this.filter = filter;
         this.register = register;
     }
 
@@ -64,9 +68,21 @@ public class WebSocketIndexListener implements IndexingOperationListener {
     }
 
     private static boolean filter(String index, String type, String id, Source source) {
-        if (source.getIndices() != null && !source.getIndices().contains(index)) {
-            return false;
-        }
+    	
+        if (source.getIndices() != null && !source.getIndices().contains(index) ) {
+ 
+        	boolean result = false;        	
+        	for (String s : source.getIndices() ) {	      		        		
+        		if ( s != null && s.length() > 0 && s.endsWith("*") && index.startsWith(s.substring(0, s.length()-1))) {
+                    result = true;
+                    break;
+        		}      		
+        	}
+        	
+        	if (result == false ) {
+            return false;		
+        	}
+        } 
 
         if (source.getTypes() != null && !source.getTypes().contains(type)) {
             return false;
@@ -95,8 +111,11 @@ public class WebSocketIndexListener implements IndexingOperationListener {
             return;
         }
         String message;
+        
+        Set<String> filters = new HashSet<>(filter);
+        
         try {
-            XContentBuilder builder = new XContentBuilder(JsonXContent.jsonXContent, new BytesStreamOutput());
+            XContentBuilder builder = new XContentBuilder(JsonXContent.jsonXContent, new BytesStreamOutput(), filters);
             builder.startObject()
                     .field("_index", change.getIndex())
                     .field("_type", change.getType())
