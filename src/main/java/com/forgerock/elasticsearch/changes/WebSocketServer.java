@@ -14,13 +14,13 @@ import java.security.PrivilegedAction;
  */
 public class WebSocketServer {
 
-    private final Logger log = Loggers.getLogger(WebSocketServer.class);
+    private final Logger log = Loggers.getLogger(WebSocketServer.class, "Changes Feed");
     private final Server server;
 
     public WebSocketServer(int port) {
         log.info("Starting Changes Plugin");
 
-        server = new Server("localhost", port, "/ws", null, WebSocketEndpoint.class);
+        server = new Server("0.0.0.0", port, "/ws", null, WebSocketEndpoint.class);
     }
 
     public void start() {

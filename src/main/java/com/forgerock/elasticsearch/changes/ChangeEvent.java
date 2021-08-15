@@ -19,6 +19,7 @@ package com.forgerock.elasticsearch.changes;
 import org.elasticsearch.common.bytes.BytesReference;
 import org.joda.time.DateTime;
 
+
 public class ChangeEvent {
     private final String index;
     private final String id;

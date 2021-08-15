@@ -25,7 +25,7 @@ import javax.websocket.server.ServerEndpoint;
 @ServerEndpoint(value = "/_changes")
 public class WebSocketEndpoint {
 
-    private final Logger log = Loggers.getLogger(WebSocketEndpoint.class);
+    private final Logger log = Loggers.getLogger(WebSocketEndpoint.class, "Changes Feed");
     private Session session;
 
     @OnOpen
