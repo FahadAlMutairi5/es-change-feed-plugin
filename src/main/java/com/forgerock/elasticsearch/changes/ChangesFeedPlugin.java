@@ -35,20 +35,33 @@ public class ChangesFeedPlugin extends Plugin {
     private static final String SETTING_LISTEN_SOURCE = "changes.listenSource";
     private static final String SETTING_DISABLE = "changes.disable";
     private static final String SETTING_FILTER = "changes.field.includes";
-
+    private static final String SETTING_ELASTICSEARCH_URL = "changes.elasticsearch.host";
+    private static final String SETTING_ELASTICSEARCH_PORT = "changes.elasticsearch.port";
+    private static final String SETTING_ELASTICSEARCH_USERNAME = "changes.elasticsearch.username";
+    private static final String SETTING_ELASTICSEARCH_PASSWORD = "changes.elasticsearch.password";
+    private static final String SETTING_ELASTICSEARCH_SCHEMA = "changes.elasticsearch.schema";
 
     private final Logger log = Loggers.getLogger(ChangesFeedPlugin.class, "Changes Feed");
     private final Set<Source> sources;
     private final boolean enabled;
     private final List<String> filter;
     private final static WebSocketRegister REGISTER = new WebSocketRegister();
+    private final String elasticsearch_url;
+    private final Integer elasticsearch_port;
+    private final String elasticsearch_username;
+    private final String elasticsearch_password;
+    private final String elasticsearch_schema;
 
     public ChangesFeedPlugin(Settings settings) {
         log.info("Starting Changes Plugin");
 
         enabled = !settings.getAsBoolean(SETTING_DISABLE, false);
-        
         filter = settings.getAsList(SETTING_FILTER, Collections.singletonList("*"));
+        elasticsearch_url = settings.get(SETTING_ELASTICSEARCH_URL, "0.0.0.0");
+        elasticsearch_port = settings.getAsInt(SETTING_ELASTICSEARCH_PORT, 9200);
+        elasticsearch_username = settings.get(SETTING_ELASTICSEARCH_USERNAME, "elastic");
+        elasticsearch_password = settings.get(SETTING_ELASTICSEARCH_PASSWORD, "elastic");
+        elasticsearch_schema = settings.get(SETTING_ELASTICSEARCH_SCHEMA, "http");
 
         if (enabled) {
             int port = settings.getAsInt(SETTING_PORT, 9400);
@@ -58,6 +71,7 @@ public class ChangesFeedPlugin extends Plugin {
                     .collect(Collectors.toSet());
 
             WebSocketServer server = new WebSocketServer(port);
+
             server.start();
         } else {
             sources = null;
@@ -67,7 +81,8 @@ public class ChangesFeedPlugin extends Plugin {
     @Override
     public void onIndexModule(IndexModule indexModule) {
         if (enabled) {
-            indexModule.addIndexOperationListener(new WebSocketIndexListener(sources, filter, REGISTER));
+
+            indexModule.addIndexOperationListener(new WebSocketIndexListener(sources, filter, REGISTER, elasticsearch_url, elasticsearch_port, elasticsearch_username, elasticsearch_password, elasticsearch_schema));
         }
         super.onIndexModule(indexModule);
     }
@@ -78,6 +93,11 @@ public class ChangesFeedPlugin extends Plugin {
         settings.add(Setting.simpleString(SETTING_LISTEN_SOURCE, Setting.Property.NodeScope));
         settings.add(Setting.simpleString(SETTING_DISABLE, Setting.Property.NodeScope));
         settings.add(Setting.simpleString(SETTING_FILTER, Setting.Property.NodeScope));
+        settings.add(Setting.simpleString(SETTING_ELASTICSEARCH_URL, Setting.Property.NodeScope));
+        settings.add(Setting.simpleString(SETTING_ELASTICSEARCH_PORT, Setting.Property.NodeScope));
+        settings.add(Setting.simpleString(SETTING_ELASTICSEARCH_USERNAME, Setting.Property.NodeScope));
+        settings.add(Setting.simpleString(SETTING_ELASTICSEARCH_PASSWORD, Setting.Property.NodeScope));
+        settings.add(Setting.simpleString(SETTING_ELASTICSEARCH_SCHEMA, Setting.Property.NodeScope));
         return settings;
     }
 

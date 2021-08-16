@@ -1,10 +1,8 @@
 package com.forgerock.elasticsearch.changes;
 
-import java.lang.Object;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
@@ -22,7 +20,6 @@ import org.elasticsearch.action.get.GetRequest;
 
 import org.joda.time.DateTime;
 
-import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -30,7 +27,7 @@ import org.elasticsearch.client.RestHighLevelClient;
 /**
  * Date: 04/05/2017 Time: 16:54
  */
-public class WebSocketIndexListener implements IndexingOperationListener {
+class WebSocketIndexListener implements IndexingOperationListener {
 
     private final Logger log = Loggers.getLogger(WebSocketIndexListener.class, "Changes Feed");
 
@@ -38,18 +35,29 @@ public class WebSocketIndexListener implements IndexingOperationListener {
     private final List<String> filter;
     private final WebSocketRegister register;
     private BytesReference sourceAsMap;
+    private final String elasticsearch_url;
+    private final Integer elasticsearch_port;
+    private final String elasticsearch_username;
+    private final String elasticsearch_password;
+    private final String elasticsearch_schema;
 
-    WebSocketIndexListener(Set<Source> sources, List<String> filter, WebSocketRegister register) {
+    WebSocketIndexListener(Set<Source> sources, List<String> filter, WebSocketRegister register,
+                           String elasticsearch_url, Integer elasticsearch_port, String elasticsearch_username,
+                           String elasticsearch_password, String elasticsearch_schema) {
         this.sources = sources;
         this.filter = filter;
         this.register = register;
-
+        this.elasticsearch_url = elasticsearch_url;
+        this.elasticsearch_port = elasticsearch_port;
+        this.elasticsearch_username = elasticsearch_username;
+        this.elasticsearch_password = elasticsearch_password;
+        this.elasticsearch_schema = elasticsearch_schema;
     }
 
     @Override
     public Engine.Index preIndex(ShardId shardId, Engine.Index index) {
         try {
-            PreChangeEvent preChangeEvent = new PreChangeEvent();
+            PreChangeEvent preChangeEvent = new PreChangeEvent(elasticsearch_url, elasticsearch_port, elasticsearch_username, elasticsearch_password, elasticsearch_schema);
             RestHighLevelClient client = preChangeEvent.client();
             GetRequest request = preChangeEvent.getIndex(index.id(), shardId.getIndex().getName());
             GetResponse getResponse = client.get(request, RequestOptions.DEFAULT);
