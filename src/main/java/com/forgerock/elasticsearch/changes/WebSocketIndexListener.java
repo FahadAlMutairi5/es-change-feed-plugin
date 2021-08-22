@@ -64,7 +64,7 @@ class WebSocketIndexListener implements IndexingOperationListener {
             sourceAsMap = getResponse.getSourceAsBytesRef();
             client.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Failed to get old index", e);
         }
         return index;
     }
