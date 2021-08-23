@@ -35,6 +35,7 @@ class WebSocketIndexListener implements IndexingOperationListener {
     private final List<String> filter;
     private final WebSocketRegister register;
     private BytesReference sourceAsMap;
+    private Boolean preIndexIsOk;
     private final String elasticsearch_url;
     private final Integer elasticsearch_port;
     private final String elasticsearch_username;
@@ -63,7 +64,9 @@ class WebSocketIndexListener implements IndexingOperationListener {
             GetResponse getResponse = client.get(request, RequestOptions.DEFAULT);
             sourceAsMap = getResponse.getSourceAsBytesRef();
             client.close();
+            preIndexIsOk = true;
         } catch (IOException e) {
+            preIndexIsOk = false;
             log.error("Failed to get old index", e);
         }
         return index;
@@ -72,11 +75,13 @@ class WebSocketIndexListener implements IndexingOperationListener {
     @Override
     public void postIndex(ShardId shardId, Engine.Index index, Engine.IndexResult result) {
 
-        ChangeEvent change = new ChangeEvent(shardId.getIndex().getName(), index.type(), index.id(), new DateTime(),
-                result.isCreated() ? ChangeEvent.Operation.CREATE : ChangeEvent.Operation.INDEX, result.getVersion(),
-                index.source());
+        if (preIndexIsOk){
+            ChangeEvent change = new ChangeEvent(shardId.getIndex().getName(), index.type(), index.id(), new DateTime(),
+                    result.isCreated() ? ChangeEvent.Operation.CREATE : ChangeEvent.Operation.INDEX, result.getVersion(),
+                    index.source());
 
-        addChange(change);
+            addChange(change);
+        }
     }
 
     @Override
