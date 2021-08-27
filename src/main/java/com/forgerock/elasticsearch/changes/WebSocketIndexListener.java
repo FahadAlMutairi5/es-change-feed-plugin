@@ -5,6 +5,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.flipkart.zjsonpatch.JsonDiff;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.common.Strings;
 import org.elasticsearch.common.bytes.BytesReference;
@@ -151,7 +154,15 @@ class WebSocketIndexListener implements IndexingOperationListener {
                 builder.rawField("_source", change.getSource().streamInput(), XContentType.JSON);
             }
             if (sourceAsMap != null){
+
+                ObjectMapper jackson = new ObjectMapper();
+                JsonNode beforeNode = jackson.readTree( change.getSource().streamInput());
+                JsonNode afterNode = jackson.readTree(sourceAsMap.streamInput());
+                JsonNode patchNode = JsonDiff.asJson(beforeNode, afterNode);
+                String diff = patchNode.toString();
+                log.info("Changes", diff);
                 builder.rawField("_oldSource", sourceAsMap.streamInput(), XContentType.JSON);
+//                builder.rawField("_changes", patchNode, XContentType.JSON);
             }
             builder.endObject();
             message = Strings.toString(builder);
